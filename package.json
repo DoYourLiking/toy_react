@@ -1,0 +1,29 @@
+{
+  "name": "toy_react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoYourLiking/toy_react.git"
+  },
+  "keywords": [],
+  "author": "zhukun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DoYourLiking/toy_react/issues"
+  },
+  "homepage": "https://github.com/DoYourLiking/toy_react#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.13",
+    "@babel/plugin-transform-react-jsx": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.20.1",
+    "webpack-cli": "^4.5.0"
+  },
+  "dependencies": {}
+}
