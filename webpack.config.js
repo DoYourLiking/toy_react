@@ -8,8 +8,9 @@ module.exports={
                 test:/\.js$/,
                 loader:'babel-loader',
                 options:{
+                    //将JSX转换为函形式，名为zk_creatElement，所以需要书写一个这样的函数
                     presets:['@babel/preset-env'],
-                    plugins:[['@babel/plugin-transform-react-jsx',{pragma:"zK_creatElement"}]]
+                    plugins:[['@babel/plugin-transform-react-jsx',{pragma:"zk_creatElement"}]]
                 }
             }
         ]
