@@ -25,6 +25,7 @@ class MyCon extends Component {
     );
   }
 }
+console.log((<MyCon></MyCon>).v_dom)
 // var a = zk_creatElement("div", {
 //     id: "root",
 //     "class": "root"

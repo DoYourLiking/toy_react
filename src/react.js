@@ -1,39 +1,4 @@
 const RENDER_TO_DOM = Symbol("render");
-class ElementWrapper {
-  constructor(type) {
-    this.dom = document.createElement(type);
-  }
-  setAttribute(key, value) {
-    if (key.match(/^on([\s\S]+)$/)) {
-      this.dom.addEventListener(
-        RegExp.$1.replace(/^[\s\S]/, (c) => c.toLocaleLowerCase()),
-        value,
-        false
-      );
-    } else {
-      this.dom.setAttribute(key, value);
-    }
-  }
-  appendChild(child) {
-    let range = document.createRange();
-    range.setStart(this.dom, this.dom.childNodes.length);
-    range.setEnd(this.dom, this.dom.childNodes.length);
-    child[RENDER_TO_DOM](range);
-  }
-  [RENDER_TO_DOM](range) {
-    range.deleteContents();
-    range.insertNode(this.dom);
-  }
-}
-class TextWrapper {
-  constructor(content) {
-    this.dom = document.createTextNode(content);
-  }
-  [RENDER_TO_DOM](range) {
-    range.deleteContents();
-    range.insertNode(this.dom);
-  }
-}
 export class Component {
   constructor(type) {
     this.props = Object.create(null);
@@ -50,6 +15,14 @@ export class Component {
   [RENDER_TO_DOM](range) {
     this._range = range;
     this.render()[RENDER_TO_DOM](range);
+  }
+  get v_dom() {
+    return this.render().v_dom;
+  }
+  get v_children() {
+    return this.childRen.map((child) => {
+      return child.v_dom;
+    });
   }
   reRender() {
     this._range.deleteContents();
@@ -81,6 +54,77 @@ export class Component {
 
   // }
 }
+class ElementWrapper extends Component {
+  constructor(type) {
+    super(type);
+    this.type = type;
+  }
+  //   setAttribute(key, value) {
+  //     if (key.match(/^on([\s\S]+)$/)) {
+  //       this.dom.addEventListener(
+  //         RegExp.$1.replace(/^[\s\S]/, (c) => c.toLocaleLowerCase()),
+  //         value,
+  //         false
+  //       );
+  //     } else {
+  //       if (key == "className") {
+  //         key = "class";
+  //       }
+  //       this.dom.setAttribute(key, value);
+  //     }
+  //   }
+  get v_dom() {
+    return this;
+  }
+  //   appendChild(child) {
+  //     let range = document.createRange();
+  //     range.setStart(this.dom, this.dom.childNodes.length);
+  //     range.setEnd(this.dom, this.dom.childNodes.length);
+  //     child[RENDER_TO_DOM](range);
+  //   }
+  [RENDER_TO_DOM](range) {
+    range.deleteContents();
+    let root = document.createElement(this.type);
+    for (let key in this.props) {
+      let value = this.props[key];
+      if (key.match(/^on([\s\S]+)$/)) {
+        root.addEventListener(
+          RegExp.$1.replace(/^[\s\S]/, (c) => c.toLocaleLowerCase()),
+          value,
+          false
+        );
+      } else {
+        if (key == "className") {
+          key = "class";
+        }
+        root.setAttribute(key, value);
+      }
+    }
+    for (let child of this.childRen) {
+      let child_range = document.createRange();
+      child_range.setStart(root, root.childNodes.length);
+      child_range.setEnd(root, root.childNodes.length);
+      child[RENDER_TO_DOM](child_range);
+    }
+    range.insertNode(root);
+  }
+}
+class TextWrapper extends Component {
+  constructor(content) {
+    super(content);
+    this.type = "#text";
+    this.content = content;
+    this.dom = document.createTextNode(content);
+  }
+  get v_dom() {
+    return this;
+  }
+  [RENDER_TO_DOM](range) {
+    range.deleteContents();
+    range.insertNode(this.dom);
+  }
+}
+
 export function zk_creatElement(tagName, options, ...childRen) {
   let e;
   if (typeof tagName === "string") {
